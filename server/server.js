@@ -8,6 +8,13 @@ import next from "next";
 import Router from "koa-router";
 import { HostUrl } from "../auxiliary/globalVariables";
 
+// Webhooks
+import { checkIfUninstalledWebhook } from './webhooks/shopWebhooks.js';
+
+// Requests
+import { checkIfSupplierInDB } from './requests/kaientaiAPI/supplierRequests.js';
+import { uponInstallation } from './functions/onStart.js';
+
 dotenv.config();
 const port = parseInt(process.env.PORT, 10) || 8081;
 const dev = process.env.NODE_ENV !== "production";
@@ -42,21 +49,10 @@ app.prepare().then(async () => {
         const { shop, accessToken, scope } = ctx.state.shopify;
         const host = ctx.query.host;
         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
-
-        const response = await Shopify.Webhooks.Registry.register({
-          shop,
-          accessToken,
-          path: "/webhooks",
-          topic: "APP_UNINSTALLED",
-          webhookHandler: async (topic, shop, body) =>
-            delete ACTIVE_SHOPIFY_SHOPS[shop],
-        });
-
-        if (!response.success) {
-          console.log(
-            `Failed to register APP_UNINSTALLED webhook: ${response.result}`
-          );
-        }
+        
+        // At Startup
+        await checkIfUninstalledWebhook(shop,accessToken,ACTIVE_SHOPIFY_SHOPS,ctx);
+        await uponInstallation(ctx, shop, accessToken);
 
         // Redirect to app with shop parameter upon auth
         ctx.redirect(`https://kaientai-dashboard-frontend.herokuapp.com/?shop=${shop}&host=${host}`);

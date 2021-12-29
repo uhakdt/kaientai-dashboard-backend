@@ -1,6 +1,5 @@
 import axios from "axios";
 import { ApiUrl } from '../../../auxiliary/globalVariables.js';
-// import { getShopData } from "../shopifyAPIRequests/shopAPI";
 
 const checkIfSupplierInDB = async (extID) => {
   const result = await axios.get(`${ApiUrl}/supplier/checkExtExists/shopify/${extID}`)
@@ -33,5 +32,13 @@ const addSupplierToDB = async (shopData) => {
   return result.data.data.supplier.id;
 };
 
+const getSupplierInfo = async (shop) => {
+  const res = await axios.get(`${ApiUrl}/supplier/domain/${shop}`)
+  .catch(error => { console.log(error); });
+  
+  return res.data.data.supplier;
+};
+
 exports.checkIfSupplierInDB = checkIfSupplierInDB;
 exports.addSupplierToDB = addSupplierToDB;
+exports.getSupplierInfo = getSupplierInfo;

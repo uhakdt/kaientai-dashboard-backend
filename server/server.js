@@ -10,9 +10,10 @@ import { HostUrl } from "../auxiliary/globalVariables";
 
 // Webhooks
 import { checkIfUninstalledWebhook } from './webhooks/shopWebhooks.js';
+import { orderPaidWebhook } from './webhooks/orderWebhooks.js';
 
 // Requests
-import { checkIfSupplierInDB } from './requests/kaientaiAPI/supplierRequests.js';
+import { getSupplierInfo } from './requests/kaientaiAPI/supplierRequests.js';
 import { uponInstallation } from './functions/onStart.js';
 
 dotenv.config();
@@ -53,6 +54,11 @@ app.prepare().then(async () => {
         // At Startup
         await checkIfUninstalledWebhook(shop,accessToken,ACTIVE_SHOPIFY_SHOPS,ctx);
         await uponInstallation(ctx, shop, accessToken);
+        const supplierInfo = await getSupplierInfo(shop);
+
+        if(supplierInfo != null) {
+          await orderPaidWebhook(shop, accessToken, supplierInfo, ctx);
+        }
 
         // Redirect to app with shop parameter upon auth
         ctx.redirect(`https://kaientai-dashboard-frontend.herokuapp.com/?shop=${shop}&host=${host}`);

@@ -18,6 +18,7 @@ import { uponInstallation } from './functions/onStart.js';
 
 dotenv.config();
 const dev = process.env.ENVIRONMENT !== "production";
+const port = process.env.PORT || 8081;
 const app = next({
   dev,
 });
@@ -103,7 +104,7 @@ app.prepare().then(async () => {
 
   server.use(router.allowedMethods());
   server.use(router.routes());
-  server.listen(8081, () => {
-    console.log('Ready on port 8081');
+  server.listen(port, () => {
+    console.log(`Ready on port ${port}`);
   });
 });

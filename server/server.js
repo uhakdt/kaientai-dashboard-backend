@@ -6,7 +6,7 @@ import Shopify, { ApiVersion } from "@shopify/shopify-api";
 import Koa from "koa";
 import next from "next";
 import Router from "koa-router";
-import { HostUrl } from "../auxiliary/globalVariables";
+import { HostUrl, FrontendUrl } from "../auxiliary/globalVariables.js";
 
 // Webhooks
 import { checkIfUninstalledWebhook } from './webhooks/shopWebhooks.js';
@@ -17,8 +17,7 @@ import { getSupplierInfo } from './requests/kaientaiAPI/supplierRequests.js';
 import { uponInstallation } from './functions/onStart.js';
 
 dotenv.config();
-const port = parseInt(process.env.PORT, 10) || 8081;
-const dev = process.env.NODE_ENV !== "production";
+const dev = process.env.ENVIRONMENT !== "production";
 const app = next({
   dev,
 });
@@ -61,7 +60,7 @@ app.prepare().then(async () => {
         }
 
         // Redirect to app with shop parameter upon auth
-        ctx.redirect(`https://kaientai-dashboard-frontend.herokuapp.com/?shop=${shop}&host=${host}`);
+        ctx.redirect(`${FrontendUrl}/?shop=${shop}&host=${host}`);
       },
     })
   );
@@ -104,7 +103,7 @@ app.prepare().then(async () => {
 
   server.use(router.allowedMethods());
   server.use(router.routes());
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
+  server.listen(8081, () => {
+    console.log('Ready on port 8081');
   });
 });

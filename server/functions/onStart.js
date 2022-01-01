@@ -12,7 +12,10 @@ const uponInstallation = async (ctx, shop, accessToken) => {
 
   // Check if supplier is already in DB
   const supplierCheckResults = await checkIfSupplierInDB(shopData.id);
-  
+  console.log("-------------------------------------")
+  console.log("Checking if Supplier is already in DB")
+  console.log(supplierCheckResults)
+  console.log("-------------------------------------")
   if(supplierCheckResults.status === 204){
     console.log("Adding New Supplier: ", shopData.name)
     shopData.platform = "shopify";
